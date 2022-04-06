@@ -1,0 +1,76 @@
+# GLOBAL
+# apt_upgrade: true             # Set it to false if you don't want to upgrade the system
+
+# This user will be used to store every ressources needed to setup the OSM server
+# It also launch renderd and osm2pgsql
+# osm_user: osm
+
+#Specify the versions you want, based on the versions available in respective repositories
+# osm2pgsql_version: "1.6.0"                                                              #v1.4.1 is already included in repo, but do not include osm2pgsql-replication feature (https://github.com/openstreetmap/osm2pgsql)
+# renderd_version: "0.6.1"                                                                # https://github.com/openstreetmap/mod_tile
+
+# default_favicon_url: https://wiki.openstreetmap.org/favicon.ico
+
+
+# TILESERVER
+# Domain that will be used to serve tiles
+tileserver_main_domain: osm.imajing.fr                                                    # (required)
+# Specify a list of subdomains from which tiles will be served. It is really usefull to have several subdomains to avoid browser request count limits
+tileserver_subdomains:                                                                    # (required)
+  - a.osm.imajing.fr
+  - b.osm.imajing.fr
+  - c.osm.imajing.fr
+  - d.osm.imajing.fr
+  - e.osm.imajing.fr
+  - f.osm.imajing.fr
+
+# tileserver_favicon: "{{ default_favicon_url }}"
+# renderd_threads: "{{ ansible_processor_vcpus }}"                                         # Set to server threads count if no values is entered
+
+
+# POSTGRESQL
+# osm_database_name: gis
+# osm_database_user: "{{ osm_user }}"
+
+# You can get really interesting information about Postgresql fine tuning for OSM here: https://wiki.openstreetmap.org/wiki/User:Species/PostGIS_Tuning
+# osm_pg_shared_buffers: "{{ ansible_memtotal_mb % 4 }}MB"                                 # Should be set as 25% of total RAM
+# osm_pg_work_mem: "2GB"
+# osm_pg_maintenance_work_mem: "2GB"
+# osm_pg_effective_cache_size: "{{ ansible_memtotal_mb % 2 }}MB"                           # Should be set as 50% of total RAM
+
+# osm_pg_wal_level: "minimal"
+# osm_pg_checkpoint_timeout: "60min"
+# osm_pg_max_wal_size: "10GB"
+# osm_pg_checkpoint_complete_target: "0.5"
+# osm_pg_max_wal_senders: "0"
+# osm_pg_random_page_cost: "1.1"
+
+
+# OSM2PGSQL
+# osm_map_pbf_url: https://download.bbbike.org/osm/planet/planet-latest.osm.pbf
+# osm_map_pbf_file: /home/osm/planet-latest.osm.pbf
+# osm_remove_pbf_after_import: true
+# osm_force_database_import: false  # Set it to true if you want to force database import even if database looks already imported
+
+# osm2pgsql_threads: "{{ ansible_processor_vcpus }}"                                        # Set to server threads count if no values is entered
+# osm2pgsql_cache_memory: "{{ ansible_memtotal_mb % 2 }}"                                   # Set to half of total RAM if no values is entered
+# osm2pgsql_flat_nodes: false                                                               # If set, you may experience issues with osm2pgsql-replication features. You can get further informations here https://osm2pgsql.org/doc/man/version-1-3-0.html
+# osm2pgsql_flat_nodes_path: /home/{{ osm_user }}/nodes.cache
+
+# OSM2PGSQL REPLICATION (real-time data replication from planet.openstreetmap.org)
+# skip_osm2pgsql_autoupdate: true                                                           # Choose if you want to synchronize with openstreetmap mirror during execution (else, it will be started in background by systemd)
+# osm_replication: true
+# osm_replication_server: https://planet.openstreetmap.org/replication/minute
+
+# Only one of osm_replication_frequency and osm_replication_cron option can be set in the same time. 
+# osm_replication_frequency: "1h"                                                           # Can also be set to 1m, 1d
+# osm_replication_cron: "*-*-* 02:00"                                                      # Systemd format (eg: *-*-* 02:00 to execute everyday at 2AM)
+# osm2pgsql_replication_options:                                                           # Some options as --max-diff-size --post-processing can be set here. Please refer to osm2pgsql-replication documentation
+
+
+# LEAFLET
+# install_leaflet: true                                                                     # Set it to false if you don't want to install leaflet
+leaflet_address: "osm.imajing.fr"                                                           # (required if install_leaflet is set to true) The domain from which leaflet is accessed
+# leaflet_port: 8080                                                                        # The port from which leaflet is accessed
+# leaflet_title: Openstreetmap mirror by Imajing                                            # Leaflet HTML title
+# leaflet_favicon: "{{ default_favicon_url }}"                                              # Leaflet HTML favicon

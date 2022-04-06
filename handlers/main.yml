@@ -1,0 +1,24 @@
+---
+- name: Reload PostgresSQL
+  service:
+    name: postgresql
+    state: reloaded
+  listen: "reload postgresql"
+
+- name: Restart PostgresSQL
+  service:
+    name: postgresql
+    state: restarted
+  listen: "restart postgresql"
+
+- name: Restart apache2
+  service:
+    name: apache2
+    state: restarted
+  listen: "restart apache2"
+
+- name: Reload apache2
+  service:
+    name: apache2
+    state: reloaded
+  listen: "reload apache2"

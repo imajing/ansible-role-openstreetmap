@@ -1,0 +1,21 @@
+---
+- name: Install psycopg2
+  pip:
+    name: ['psycopg2-binary', 'psycopg2']
+    state: present
+
+- name: Install osm2pgsql (v1.4.1) required for database import
+  apt: 
+    name: ['osm2pgsql']
+    state: present
+    update_cache: yes
+  when: osm2pgsql_version == '1.4.1' and ansible_distribution_major_version == '20'
+
+- name: Check if osm2pgsql is installed
+  stat:
+    path: /usr/local/bin/osm2pgsql
+  register: osm_installed
+
+- name: Compile osm2pgsql (v{{ osm2pgsql_version }}) required for database import
+  include: compile_osm2pgsql.yml
+  when: osm2pgsql_version != '1.4.1' and ansible_distribution_major_version == '20' and osm_installed.stat.exists == false

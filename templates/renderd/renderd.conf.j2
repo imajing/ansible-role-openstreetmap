@@ -1,0 +1,19 @@
+; BASIC AND SIMPLE CONFIGURATION:
+
+[renderd]
+stats_file=/run/renderd/renderd.stats
+socketname=/run/renderd/renderd.sock
+num_threads={{ renderd_threads }}
+tile_dir=/var/cache/renderd/tiles
+
+[mapnik]
+plugins_dir=/usr/lib/mapnik/3.1/input
+font_dir=/usr/share/fonts/truetype
+font_dir_recurse=true
+
+[default]
+URI=/osm/
+XML=/home/osm/openstreetmap-carto/style.xml
+HOST={{ tileserver_main_domain }}
+
+; ADD YOUR LAYERS:

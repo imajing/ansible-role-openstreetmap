@@ -1,0 +1,36 @@
+---
+# Create {{ osm_user }} system user
+- name: Create group for {{ osm_user }} user
+  group:
+    name: osm
+    state: present
+
+- name: Create user {{ osm_user }}
+  user:
+    name: "{{ osm_user }}"
+    state: present
+    shell: /bin/bash
+    comment: "{{ osm_user }} user"
+    group: osm
+    create_home: yes
+    system: yes
+    force: yes
+
+- name: Define default ACLs for {{ osm_user }}
+  acl:
+    path: "/home/osm/"
+    entity: osm
+    etype: user
+    permissions: rwx
+    recursive: true
+    default: yes
+    state: present
+
+- name: Ensure ACLs are correctly set for {{ osm_user }}
+  acl:
+    path: "/home/osm/"
+    entity: osm
+    etype: user
+    permissions: rwx
+    recursive: true
+    state: present

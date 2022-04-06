@@ -1,0 +1,11 @@
+[Unit]
+Description=Launch renderd daemon
+
+[Service]
+WorkingDirectory=/tmp
+ExecStart=renderd -f
+StandardOutput=append:/var/log/renderd.log
+User=osm
+Type=simple
+Restart=on-failure
+RestartSec=5min

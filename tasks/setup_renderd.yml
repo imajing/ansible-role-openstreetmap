@@ -1,0 +1,111 @@
+---
+- name: Add openstreetmap repository
+  apt_repository:
+    repo: ppa:osmadmins/ppa
+    state: present
+
+- name: Install required packages for renderd
+  apt:
+    name: apache2
+    state: present
+
+# This path need to be adjusted
+- name: Check if renderd is installed
+  stat:
+    path: /usr/lib/apache2/modules/mod_tile.so
+  register: renderd_installed
+
+- name: Install renderd if it is not already present
+  when: renderd_installed.stat.exists == false
+  block:
+  - name: Install renderd from ppa repository
+    when: renderd_version == '0.6.1' and ansible_distribution_major_version == '20'
+    block:
+    - name: Install required packages for renderd install
+      apt: 
+        name: ['libapache2-mod-tile', 'renderd']
+        state: present
+        update_cache: yes
+
+    - name: Enable tile apache2 module
+      shell: a2enmod tile
+
+- name: Install renderd from sources
+  include: compile_renderd.yml
+  when: renderd_version != '0.6.1'
+
+- name: Load tileserver vhost configuration into apache2
+  template:
+    src: apache2/tileserver.vhost.j2
+    dest: /etc/apache2/sites-available/tileserver-vhost.conf
+    owner: www-data
+    group: www-data
+    mode: 0o644
+
+- name: Load renderd configuration
+  template:
+    src: "renderd/renderd.conf.j2"
+    dest: "/etc/renderd.conf"
+    owner: root
+    group: root
+    mode: 0o644
+
+- name: Enable tileserver site
+  shell: a2ensite tileserver-vhost.conf
+  notify: restart apache2
+
+- name: Template renderd.service
+  template:
+    src: renderd/renderd.service.j2
+    dest: /etc/systemd/system/renderd.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Ensure /etc/systemd/system/renderd.service.d/ directory exists
+  file:
+    path: /etc/systemd/system/renderd.service.d/
+    state: directory
+
+- name: Load custom.conf file into renderd systemd service
+  template:
+    src: renderd/custom.conf.j2
+    dest: /etc/systemd/system/renderd.service.d/custom.conf
+    owner: osm
+    group: osm
+    mode: 0o644
+
+- name: Download favicon into renderd default location
+  get_url:
+    url: "{{ tileserver_favicon }}"
+    dest: /var/www/html/favicon.ico
+
+- name: Ensure permissions are correct for renderd
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: osm
+    group: osm
+  with_items:
+    - /run/renderd/
+    - /var/cache/renderd/tiles/
+
+- name: Ensure renderd.service is started and enabled
+  service:
+    name: renderd.service
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Force restart renderd service
+  service:
+    name: renderd.service
+    state: restarted
+    sleep: 5
+
+- name: Force restart apache2 service
+  service:
+    name: apache2
+    state: restarted
+    sleep: 5

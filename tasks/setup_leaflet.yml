@@ -1,0 +1,55 @@
+---
+- name: Install required packages for leaflet install
+  apt: 
+    name: ['wget', 'unzip']
+    state: present
+    update_cache: yes
+
+- name: Create leaflet directory
+  file:
+    path: /home/{{ osm_user }}/leaflet
+    state: directory
+    owner: "{{ osm_user }}"
+    group: "www-data"
+    mode: 0o775
+    recurse: yes
+
+- name: Download latest leaflet release
+  get_url:
+    url: http://cdn.leafletjs.com/leaflet/v1.7.1/leaflet.zip
+    dest: /tmp/leaflet.zip
+
+- name: Extract leaflet.zip into /home/{{ osm_user }}/leaflet
+  unarchive:
+    remote_src: yes
+    src: /tmp/leaflet.zip
+    dest: /home/{{ osm_user }}/leaflet
+
+- name: Load leaflet index template into root directory of web server
+  template:
+    src: leaflet/index.html.j2
+    dest: /home/{{ osm_user }}/leaflet/index.html
+    owner: osm
+    group: www-data
+    mode: 0o664
+
+- name: Download favicon into leaflet documentroot
+  get_url:
+    url: "{{ leaflet_favicon }}"
+    dest: /home/{{ osm_user }}/leaflet/favicon.ico
+    
+- name: Configure leaflet virtualhost configuration
+  template:
+    src: apache2/leaflet.vhost.j2
+    dest: /etc/apache2/sites-available/leaflet-vhost.conf
+    owner: www-data
+    group: www-data
+    mode: 0o644
+
+- name: Enable leaflet vhost
+  shell: a2ensite leaflet-vhost.conf
+
+- name: Force apache2 to restart
+  service:
+    name: apache2
+    state: restarted

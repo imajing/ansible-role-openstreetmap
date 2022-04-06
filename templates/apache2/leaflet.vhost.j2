@@ -1,0 +1,15 @@
+Listen {{ leaflet_port}}
+<VirtualHost *:{{ leaflet_port}}>
+    ServerName {{ leaflet_address }}
+    LogLevel info
+    DocumentRoot /home/osm/leaflet
+
+    <Directory /home/osm/leaflet>
+
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride None
+        Require all granted
+
+    </Directory>
+
+</VirtualHost>

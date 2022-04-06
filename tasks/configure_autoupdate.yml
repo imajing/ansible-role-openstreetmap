@@ -1,0 +1,48 @@
+---
+# This role part is inspired by https://osm2pgsql.org/doc/manual.html#keeping-the-database-up-to-date-with-osm2pgsql-replication
+
+- name: Install osmium pip library
+  pip:
+    name: osmium
+    state: present
+
+- name: Ensure one of osm_replication_frequency or osm_replication_cron is defined
+  fail:
+    msg: "You must define either osm_replication_frequency or osm_replication_cron"
+  when: osm_replication_frequency is not defined and osm_replication_cron is not defined
+
+# Check if database auto-update is already setup
+- name: Check if osm2pgsql auto-update is already configured
+  block:
+    - name: Try to retrieve osm2pgsql-replication status
+      shell: "runuser -u {{ osm_user }} -- osm2pgsql-replication status -d {{ osm_database_name }}"
+  rescue:
+    - name: Start database minutly auto-update process
+      shell: "runuser -u {{ osm_user }} -- osm2pgsql-replication init -d {{ osm_database_name }} --server {{ osm_replication_server }}"
+
+    - name: Start database minutly auto-update process
+      shell: "runuser -u {{ osm_user }} -- osm2pgsql-replication update -d {{ osm_database_name }} -- {{ osm_replication_options|default('') }}"
+      when: skip_osm2pgsql_autoupdate == false
+
+- name: Template osm2pgsql-update.service
+  template:
+    src: osm2pgsql/osm2pgsql-update.service.j2
+    dest: /etc/systemd/system/osm2pgsql-update.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Template osm2pgsql-update.timer
+  template:
+    src: osm2pgsql/osm2pgsql-update.timer.j2
+    dest: /etc/systemd/system/osm2pgsql-update.timer
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Ensure osm2pgsql-update.timer is started and enabled
+  service:
+    name: osm2pgsql-update.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes

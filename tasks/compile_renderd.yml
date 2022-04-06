@@ -1,0 +1,51 @@
+---
+- name: Remove existing renderd install
+  apt:
+    name: renderd
+    state: absent
+
+- name: Install required packages
+  apt:
+    name: ['build-essential', 'autoconf', 'apache2-dev', 'libcairo2-dev', 'libcurl4-gnutls-dev', 'libglib2.0-dev', 'libiniparser-dev', 'libmapnik-dev', 'libmemcached-dev', 'librados-dev']
+    state: present
+    update_cache: yes
+
+# Download, build & install
+- name: Clone mod_tile repository v.{{ renderd_version }}
+  git:
+    repo: https://github.com/openstreetmap/mod_tile.git
+    dest: /usr/local/src/mod_tile
+    version: "{{ renderd_version }}"
+
+- name: Compile mod_tile
+  shell:
+    cmd: ./autogen.sh && ./configure && make
+    chdir: /usr/local/src/mod_tile
+
+# Create tiles directory
+- name: Ensure tiles directory are created
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /run/renderd
+    - /var/cache/renderd/tiles
+
+# Install mod_tile and renderd
+- name: Install mod_tile
+  shell:
+    cmd: make install && make install-mod_tile && ldconfig
+    chdir: /usr/local/src/mod_tile
+
+- name: Add mod_tile module into apache2
+  shell: echo 'LoadModule tile_module /usr/lib/apache2/modules/mod_tile.so' > /etc/apache2/mods-available/mod_tile.load
+
+- name: Load mod_tile apache2 module
+  shell: a2enmod mod_tile
+
+# Start services
+- name: Ensure apache2 is started and enabled
+  service:
+    name: apache2
+    state: restarted
+    enabled: yes

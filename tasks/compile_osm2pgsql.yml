@@ -1,0 +1,34 @@
+---
+- name: Remove existing osm2pgsql install
+  apt:
+    name: osm2pgsql
+    state: absent
+
+- name: Install required packages for osm2pgsql build are installed
+  apt: 
+    name: ["make", "cmake", "g++", "libboost-dev", "libboost-system-dev", "libboost-filesystem-dev", "libexpat1-dev", "zlib1g-dev", "libbz2-dev", "libpq-dev", "libproj-dev", "lua5.3", "liblua5.3-dev", "libluajit-5.1-dev", "pandoc"]
+    state: present
+    update_cache: yes
+
+- name: Clone osm2pgsql repository v.{{ osm2pgsql_version }}
+  git:
+    repo: https://github.com/openstreetmap/osm2pgsql.git
+    dest: /home/osm/osm2pgsql
+    version: "{{ osm2pgsql_version }}"
+  become_user: osm
+  become: true
+
+- name: Create build directory into /home/osm/osm2pgsql
+  file:
+    path: /home/osm/osm2pgsql/build
+    state: directory
+
+- name: Build makefile with "cmake"
+  shell:
+    cmd: cmake -D WITH_LUAJIT=ON .. 
+    chdir: /home/osm/osm2pgsql/build
+
+- name: Build osm2pgsql with "make"
+  shell:
+    cmd: make && make install
+    chdir: /home/osm/osm2pgsql/build

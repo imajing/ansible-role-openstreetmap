@@ -1,0 +1,14 @@
+[Unit]
+Description=Trigger a osm2pgsql database update
+
+[Timer]
+OnBootSec=10
+{% if osm_replication_frequency is defined %}
+OnUnitActiveSec={{ osm_replication_frequency }}
+{% endif %}
+{% if osm_replication_cron is defined %}
+OnCalendar={{ osm_replication_cron }}
+{% endif %}
+
+[Install]
+WantedBy=timers.target

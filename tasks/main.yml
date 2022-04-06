@@ -1,0 +1,42 @@
+---
+# Ensure we are running on a Debian based system, else exit with error (not supported by RPM based OS)
+
+- name: Install globally required packages
+  include: install_packages.yml
+
+- name: Create {{ osm_user }} user and set proper rights
+  include: create_user.yml
+
+- name: Install PostgreSQL with PostGIS
+  include: setup_postgresql.yml
+
+- name: Install OSM2pgsql
+  include: setup_osm2pgsql.yml
+
+- name: Generate Mapnik Stylesheet
+  include: setup_mapnik_stylesheet.yml
+
+- name: Import database using osm2pgsql
+  include: import_database.yml
+
+- name: Setup Renderd
+  include: setup_renderd.yml
+
+- name: Configure OSM auto-update
+  include: configure_autoupdate.yml
+  when: osm_replication == true and osm2pgsql_version is version ('1.6.0', '>=')
+
+- debug:
+    msg: Skipping database auto-update as is it only compatible with osm2pgsql 1.6.0+ versions
+  when: osm_replication == true and osm2pgsql_version is version ('1.6.0', '<')
+
+- name: Setup leaflet to easily consult OSM data from browser
+  include: setup_leaflet.yml
+  when: install_leaflet == true
+
+- name: Ensure mod_tile (renderd) is properly installed
+  uri:
+    url: http://{{ tileserver_main_domain }}/osm/0/0/0.png
+
+- debug:
+    msg: "OSM is now installed, you can access it at http://{{ tileserver_main_domain }}/osm"

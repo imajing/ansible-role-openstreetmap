@@ -1,0 +1,82 @@
+---
+- name: Ensure required packages for PostgreSQL are installed
+  apt: 
+    name: ['gnupg2', 'wget', 'vim']
+    state: present
+    update_cache: yes
+
+- name: Add PostgreSQL repository key
+  apt_key:
+    url: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
+    state: present
+
+- name: Add PostgreSQL apt repository
+  apt_repository:
+    repo: "deb http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release | lower }}-pgdg main"
+    state: present
+
+- name: Install PostgreSQL
+  apt:
+    name: ['postgresql-14', 'postgresql-contrib-14', 'postgis', 'postgresql-14-postgis-3']
+    state: present
+    update_cache: yes
+
+- name: Ensure PostgreSQL is properly started and enabled
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+# Edit postgresql.conf
+- name: Customize postgresql configuration
+  lineinfile:
+    path: /etc/postgresql/14/main/postgresql.conf
+    line: "{{ item }}"
+  with_items: 
+    - "shared_buffers = {{ osm_pg_shared_buffers }}"
+    - "work_mem = {{ osm_pg_work_mem }}"
+    - "maintenance_work_mem = {{ osm_pg_maintenance_work_mem }}"
+    - "effective_cache_size = {{ osm_pg_effective_cache_size }}"
+    - "wal_level = {{ osm_pg_wal_level }}"
+    - "checkpoint_timeout = {{ osm_pg_checkpoint_timeout }}"
+    - "max_wal_size = {{ osm_pg_max_wal_size }}"
+    - "checkpoint_completion_target = {{ osm_pg_checkpoint_complete_target }}"
+    - "max_wal_senders = {{ osm_pg_max_wal_senders }}"
+    - "random_page_cost = {{ osm_pg_random_page_cost }}"
+  notify: "restart postgresql"
+
+# Configure hugepage
+- name: Retrieve PostgreSQL vmpeak size in kb
+  shell: grep ^VmPeak /proc/$(head -1 /var/lib/postgresql/14/main/postmaster.pid)/status | awk '{print $2}'  
+  register: pg_vmpeak
+
+- name: Retrieve huge page size in kb
+  shell: grep Hugepagesize /proc/meminfo | awk '{print $2}'
+  register: pg_hugepagesize
+
+- name: Ensure vm.nr_hugepages is set to the correct value
+  ansible.posix.sysctl:
+    name: vm.nr_hugepages
+    value: "{{ ((pg_vmpeak.stdout | int) / (pg_hugepagesize.stdout | int)) | int }}"
+    state: present
+    reload: yes
+  notify: "restart postgresql"
+
+- name: Check if database is initialized
+  block:
+    - name: Check if database is already initialized
+      shell: runuser -u postgres -- psql -q gis -c "SELECT postgis_version();"
+  rescue:
+    # Create database and pre-configure it
+    - name: Create dedicated PostgreSQL user
+      shell: runuser -u postgres -- createuser osm
+
+    - name: Create {{ osm_database_name }} database owned by {{ osm_database_user }}
+      shell: runuser -u postgres -- createdb -E UTF8 -O {{ osm_database_user }} {{ osm_database_name }}
+
+    - name: Enable required extensions in {{ osm_database_name }} database
+      shell: runuser -u postgres -- psql -d {{ osm_database_name }} -c "{{ item }}"
+      with_items:
+        - "CREATE EXTENSION postgis;"
+        - "CREATE EXTENSION hstore;"
+        - "ALTER TABLE spatial_ref_sys OWNER TO {{ osm_database_user }};"

@@ -1,0 +1,19 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: openstreetmap
+  author: mpaletou
+  description: "Installs and configures Openstreetmap mirror with auto-replication."
+  company: "Imajing SAS"
+  license: "license (BSD, MIT)"
+  min_ansible_version: "2.4"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+  galaxy_tags:
+    - openstreetmap
+    - renderd
+    - postgresql
+    - osm2pgsql

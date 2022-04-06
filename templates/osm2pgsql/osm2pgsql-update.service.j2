@@ -1,0 +1,11 @@
+[Unit]
+Description=Keep osm2pgsql database up-to-date
+
+[Service]
+WorkingDirectory=/tmp
+ExecStart=osm2pgsql-replication update -d {{ osm_database_name }} -- {{ osm2pgsql_options|default("") }}
+StandardOutput=append:/var/log/osm2pgsql-updates.log
+User={{ osm_user }}
+Type=simple
+Restart=on-failure
+RestartSec=5min
