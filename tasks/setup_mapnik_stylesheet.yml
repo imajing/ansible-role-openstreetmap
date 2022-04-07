@@ -1,22 +1,42 @@
 ---
 - name: Ensure required packages for mapnik stylesheet generation are installed
   apt:
-    name: ['git', 'acl', 'curl', 'unzip', 'gdal-bin', 'mapnik-utils', 'libmapnik-dev', 'python3-pip', 'npm']
+    name:
+      [
+        "git",
+        "acl",
+        "curl",
+        "unzip",
+        "gdal-bin",
+        "mapnik-utils",
+        "libmapnik-dev",
+        "python3-pip",
+        "npm",
+      ]
     state: present
     update_cache: yes
 
 - name: Install fonts packages used by map rendering
   apt:
-    name: ['ttf-dejavu', 'fonts-noto-cjk', 'fonts-noto-cjk-extra', 'fonts-noto-hinted', 'fonts-noto-unhinted', 'ttf-unifont', 'fonts-hanazono']
+    name:
+      [
+        "ttf-dejavu",
+        "fonts-noto-cjk",
+        "fonts-noto-cjk-extra",
+        "fonts-noto-hinted",
+        "fonts-noto-unhinted",
+        "ttf-unifont",
+        "fonts-hanazono",
+      ]
     state: present
     update_cache: yes
 
 - name: Clone openstreetmap-carto repository
   git:
     repo: https://github.com/gravitystorm/openstreetmap-carto.git
-    dest: /home/osm/openstreetmap-carto
+    dest: "/home/{{ osm_user }}/openstreetmap-carto"
     version: master
-  become_user: osm
+  become_user: "{{ osm_user }}"
   become: true
 
 - name: Install carto
@@ -26,14 +46,14 @@
 - name: Execute scripts/get-external-data.py
   shell:
     cmd: runuser -u osm -- python3 scripts/get-external-data.py
-    chdir: /home/osm/openstreetmap-carto
+    chdir: "/home/{{ osm_user }}/openstreetmap-carto"
   retries: 3
   delay: 5
 
 - name: Build Mapnik XML stylesheet
   shell:
     cmd: runuser -u postgres -- carto project.mml > style.xml
-    chdir: /home/osm/openstreetmap-carto
+    chdir: "/home/{{ osm_user }}/openstreetmap-carto"
 
 - name: "Create gis database owned by {{ osm_database_user }}"
   shell: runuser -u postgres -- psql -d {{ osm_database_name }} -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {{ osm_database_user }};"

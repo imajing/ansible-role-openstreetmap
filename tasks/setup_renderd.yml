@@ -18,17 +18,17 @@
 - name: Install renderd if it is not already present
   when: renderd_installed.stat.exists == false
   block:
-  - name: Install renderd from ppa repository
-    when: renderd_version == '0.6.1' and ansible_distribution_major_version == '20'
-    block:
-    - name: Install required packages for renderd install
-      apt: 
-        name: ['libapache2-mod-tile', 'renderd']
-        state: present
-        update_cache: yes
+    - name: Install renderd from ppa repository
+      when: renderd_version == '0.6.1' and ansible_distribution_major_version == '20'
+      block:
+        - name: Install required packages for renderd install
+          apt:
+            name: ["libapache2-mod-tile", "renderd"]
+            state: present
+            update_cache: yes
 
-    - name: Enable tile apache2 module
-      shell: a2enmod tile
+        - name: Enable tile apache2 module
+          shell: a2enmod tile
 
 - name: Install renderd from sources
   include: compile_renderd.yml
@@ -60,7 +60,7 @@
     dest: /etc/systemd/system/renderd.service
     owner: root
     group: root
-    mode: 0644
+    mode: 0o644
 
 - name: Ensure /etc/systemd/system/renderd.service.d/ directory exists
   file:
@@ -71,8 +71,8 @@
   template:
     src: renderd/custom.conf.j2
     dest: /etc/systemd/system/renderd.service.d/custom.conf
-    owner: osm
-    group: osm
+    owner: "{{ osm_user }}"
+    group: "{{ osm_user }}"
     mode: 0o644
 
 - name: Download favicon into renderd default location
@@ -85,8 +85,8 @@
     path: "{{ item }}"
     state: directory
     recurse: yes
-    owner: osm
-    group: osm
+    owner: "{{ osm_user }}"
+    group: "{{ osm_user }}"
   with_items:
     - /run/renderd/
     - /var/cache/renderd/tiles/

@@ -30,7 +30,7 @@
     dest: /etc/systemd/system/osm2pgsql-update.service
     owner: root
     group: root
-    mode: 0644
+    mode: 0o644
 
 - name: Template osm2pgsql-update.timer
   template:
@@ -38,7 +38,7 @@
     dest: /etc/systemd/system/osm2pgsql-update.timer
     owner: root
     group: root
-    mode: 0644
+    mode: 0o644
 
 - name: Ensure osm2pgsql-update.timer is started and enabled
   service:

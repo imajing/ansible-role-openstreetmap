@@ -1,7 +1,7 @@
 ---
 - name: Install required packages for leaflet install
-  apt: 
-    name: ['wget', 'unzip']
+  apt:
+    name: ["wget", "unzip"]
     state: present
     update_cache: yes
 
@@ -29,7 +29,7 @@
   template:
     src: leaflet/index.html.j2
     dest: /home/{{ osm_user }}/leaflet/index.html
-    owner: osm
+    owner: "{{ osm_user }}"
     group: www-data
     mode: 0o664
 
@@ -37,7 +37,7 @@
   get_url:
     url: "{{ leaflet_favicon }}"
     dest: /home/{{ osm_user }}/leaflet/favicon.ico
-    
+
 - name: Configure leaflet virtualhost configuration
   template:
     src: apache2/leaflet.vhost.j2

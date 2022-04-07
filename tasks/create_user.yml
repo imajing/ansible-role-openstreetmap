@@ -2,7 +2,7 @@
 # Create {{ osm_user }} system user
 - name: Create group for {{ osm_user }} user
   group:
-    name: osm
+    name: "{{ osm_user }}"
     state: present
 
 - name: Create user {{ osm_user }}
@@ -11,15 +11,15 @@
     state: present
     shell: /bin/bash
     comment: "{{ osm_user }} user"
-    group: osm
+    group: "{{ osm_user }}"
     create_home: yes
     system: yes
     force: yes
 
 - name: Define default ACLs for {{ osm_user }}
   acl:
-    path: "/home/osm/"
-    entity: osm
+    path: "/home/{{ osm_user }}/"
+    entity: "{{ osm_user }}"
     etype: user
     permissions: rwx
     recursive: true
@@ -28,8 +28,8 @@
 
 - name: Ensure ACLs are correctly set for {{ osm_user }}
   acl:
-    path: "/home/osm/"
-    entity: osm
+    path: "/home/{{ osm_user }}/"
+    entity: "{{ osm_user }}"
     etype: user
     permissions: rwx
     recursive: true

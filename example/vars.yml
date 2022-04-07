@@ -11,12 +11,11 @@
 
 # default_favicon_url: https://wiki.openstreetmap.org/favicon.ico
 
-
 # TILESERVER
 # Domain that will be used to serve tiles
-tileserver_main_domain: osm.imajing.fr                                                    # (required)
+tileserver_main_domain: osm.imajing.fr # (required)
 # Specify a list of subdomains from which tiles will be served. It is really usefull to have several subdomains to avoid browser request count limits
-tileserver_subdomains:                                                                    # (required)
+tileserver_subdomains: # (required)
   - a.osm.imajing.fr
   - b.osm.imajing.fr
   - c.osm.imajing.fr
@@ -26,7 +25,6 @@ tileserver_subdomains:                                                          
 
 # tileserver_favicon: "{{ default_favicon_url }}"
 # renderd_threads: "{{ ansible_processor_vcpus }}"                                         # Set to server threads count if no values is entered
-
 
 # POSTGRESQL
 # osm_database_name: gis
@@ -45,10 +43,9 @@ tileserver_subdomains:                                                          
 # osm_pg_max_wal_senders: "0"
 # osm_pg_random_page_cost: "1.1"
 
-
 # OSM2PGSQL
 # osm_map_pbf_url: https://download.bbbike.org/osm/planet/planet-latest.osm.pbf
-# osm_map_pbf_file: /home/osm/planet-latest.osm.pbf
+# osm_map_pbf_file: "/home/{{ osm_user }}/planet-latest.osm.pbf"
 # osm_remove_pbf_after_import: true
 # osm_force_database_import: false  # Set it to true if you want to force database import even if database looks already imported
 
@@ -62,15 +59,14 @@ tileserver_subdomains:                                                          
 # osm_replication: true
 # osm_replication_server: https://planet.openstreetmap.org/replication/minute
 
-# Only one of osm_replication_frequency and osm_replication_cron option can be set in the same time. 
+# Only one of osm_replication_frequency and osm_replication_cron option can be set in the same time.
 # osm_replication_frequency: "1h"                                                           # Can also be set to 1m, 1d
 # osm_replication_cron: "*-*-* 02:00"                                                      # Systemd format (eg: *-*-* 02:00 to execute everyday at 2AM)
 # osm2pgsql_replication_options:                                                           # Some options as --max-diff-size --post-processing can be set here. Please refer to osm2pgsql-replication documentation
 
-
 # LEAFLET
 # install_leaflet: true                                                                     # Set it to false if you don't want to install leaflet
-leaflet_address: "osm.imajing.fr"                                                           # (required if install_leaflet is set to true) The domain from which leaflet is accessed
+leaflet_address: "osm.imajing.fr" # (required if install_leaflet is set to true) The domain from which leaflet is accessed
 # leaflet_port: 8080                                                                        # The port from which leaflet is accessed
 # leaflet_title: Openstreetmap mirror by Imajing                                            # Leaflet HTML title
 # leaflet_favicon: "{{ default_favicon_url }}"                                              # Leaflet HTML favicon
