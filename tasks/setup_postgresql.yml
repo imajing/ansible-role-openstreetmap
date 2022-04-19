@@ -32,6 +32,8 @@
   lineinfile:
     path: /etc/postgresql/14/main/postgresql.conf
     line: "{{ item }}"
+    regexp: "^{{ item.split('=')[0] }}"
+    state: present
   with_items:
     - "shared_buffers = {{ osm_pg_shared_buffers }}"
     - "work_mem = {{ osm_pg_work_mem }}"
