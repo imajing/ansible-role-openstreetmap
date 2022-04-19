@@ -1,0 +1,7 @@
+unskippable:
+  - syntax-check
+
+skip_list:
+  - 301
+  - 305
+  - 306
