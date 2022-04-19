@@ -52,7 +52,7 @@ osm_pg_random_page_cost: "1.1"
 
 # OSM2PGSQL
 osm_map_pbf_url: https://download.bbbike.org/osm/planet/planet-latest.osm.pbf
-osm_map_pbf_file: /home/osm/planet-latest.osm.pbf
+osm_map_pbf_file: "/home/{{ osm_user }}/planet-latest.osm.pbf"
 osm_remove_pbf_after_import: true
 # Set it to true if you want to force database import even if database looks already imported
 osm_force_database_import: false

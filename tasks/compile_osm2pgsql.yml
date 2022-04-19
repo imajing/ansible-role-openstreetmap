@@ -30,14 +30,14 @@
 - name: Clone osm2pgsql repository v.{{ osm2pgsql_version }}
   git:
     repo: https://github.com/openstreetmap/osm2pgsql.git
-    dest: /home/osm/osm2pgsql
+    dest: "/home/{{ osm_user }}/osm2pgsql"
     version: "{{ osm2pgsql_version }}"
-  become_user: osm
+  become_user: "{{ osm_user }}"
   become: true
 
-- name: Create build directory into /home/osm/osm2pgsql
+- name: Create build directory into /home/{{ osm_user }}/osm2pgsql
   file:
-    path: /home/osm/osm2pgsql/build
+    path: "/home/{{ osm_user }}/osm2pgsql/build"
     state: directory
     owner: root
     group: root
@@ -46,9 +46,9 @@
 - name: Build makefile with "cmake"
   shell:
     cmd: cmake -D WITH_LUAJIT=ON ..
-    chdir: /home/osm/osm2pgsql/build
+    chdir: "/home/{{ osm_user }}/osm2pgsql/build"
 
 - name: Build osm2pgsql with "make"
   shell:
     cmd: make && make install
-    chdir: /home/osm/osm2pgsql/build
+    chdir: "/home/{{ osm_user }}/osm2pgsql/build"

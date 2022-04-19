@@ -23,7 +23,7 @@
       block:
         - name: Install required packages for renderd install
           apt:
-            name: ['libapache2-mod-tile', 'renderd']
+            name: ["libapache2-mod-tile", "renderd"]
             state: present
             update_cache: true
 
@@ -60,7 +60,7 @@
     dest: /etc/systemd/system/renderd.service
     owner: root
     group: root
-    mode: 0644
+    mode: 0o644
 
 - name: Ensure /etc/systemd/system/renderd.service.d/ directory exists
   file:
@@ -74,8 +74,8 @@
   template:
     src: renderd/custom.conf.j2
     dest: /etc/systemd/system/renderd.service.d/custom.conf
-    owner: osm
-    group: osm
+    owner: "{{ osm_user }}"
+    group: "{{ osm_user }}"
     mode: 0o644
 
 - name: Download favicon into renderd default location
@@ -90,8 +90,8 @@
     path: "{{ item }}"
     state: directory
     recurse: true
-    owner: osm
-    group: osm
+    owner: "{{ osm_user }}"
+    group: "{{ osm_user }}"
   with_items:
     - /run/renderd/
     - /var/cache/renderd/tiles/

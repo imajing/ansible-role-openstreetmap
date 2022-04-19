@@ -2,9 +2,9 @@ Listen {{ leaflet_port}}
 <VirtualHost *:{{ leaflet_port}}>
     ServerName {{ leaflet_address }}
     LogLevel info
-    DocumentRoot /home/osm/leaflet
+    DocumentRoot /home/{{ osm_user }}/leaflet
 
-    <Directory /home/osm/leaflet>
+    <Directory /home/{{ osm_user }}/leaflet>
 
         Options Indexes FollowSymLinks MultiViews
         AllowOverride None
