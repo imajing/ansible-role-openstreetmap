@@ -38,6 +38,8 @@
 - name: Ensure mod_tile (renderd) is properly installed
   uri:
     url: http://{{ tileserver_main_domain }}/osm/0/0/0.png
+  retries: 6
+  delay: 5
 
 - name: Confirm the user everything suceed during execution
   debug:

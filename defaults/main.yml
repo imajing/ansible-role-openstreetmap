@@ -19,6 +19,17 @@ tileserver_favicon: "{{ default_favicon_url }}"
 # Set to server threads count if no specific value is entered
 renderd_threads: "{{ ansible_processor_vcpus }}"
 
+mod_tile_bulk_mode: "Off"
+mod_tile_request_timeout: "30"
+mod_tile_missing_request_timeout: "30"
+mod_tile_max_load_old: "1800"
+mod_tile_max_load_missing: "1800"
+mod_tile_cache_duration_max: "31536000"
+mod_tile_cache_duration_dirty: "900"
+mod_tile_cache_duration_minimum: "10800"
+mod_tile_cache_duration_medium_zoom: "13 86400"
+mod_tile_cache_duration_low_zoom: "9 518400"
+mod_tile_cache_last_modified_factor: "0.01"
 
 # POSTGRESQL
 osm_database_name: gis
