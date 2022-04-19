@@ -22,7 +22,7 @@
 
     - name: Start database minutly auto-update process
       shell: "runuser -u {{ osm_user }} -- osm2pgsql-replication update -d {{ osm_database_name }} -- {{ osm_replication_options|default('') }}"
-      when: skip_osm2pgsql_autoupdate == false
+      when: not skip_osm2pgsql_autoupdate
 
 - name: Template osm2pgsql-update.service
   template:
@@ -44,5 +44,5 @@
   service:
     name: osm2pgsql-update.timer
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true

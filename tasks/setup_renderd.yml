@@ -16,19 +16,19 @@
   register: renderd_installed
 
 - name: Install renderd if it is not already present
-  when: renderd_installed.stat.exists == false
+  when: not renderd_installed.stat.exists
   block:
-  - name: Install renderd from ppa repository
-    when: renderd_version == '0.6.1' and ansible_distribution_major_version == '20'
-    block:
-    - name: Install required packages for renderd install
-      apt: 
-        name: ['libapache2-mod-tile', 'renderd']
-        state: present
-        update_cache: yes
+    - name: Install renderd from ppa repository
+      when: renderd_version == '0.6.1' and ansible_distribution_major_version == '20'
+      block:
+        - name: Install required packages for renderd install
+          apt:
+            name: ['libapache2-mod-tile', 'renderd']
+            state: present
+            update_cache: true
 
-    - name: Enable tile apache2 module
-      shell: a2enmod tile
+        - name: Enable tile apache2 module
+          shell: a2enmod tile
 
 - name: Install renderd from sources
   include: compile_renderd.yml
@@ -66,6 +66,9 @@
   file:
     path: /etc/systemd/system/renderd.service.d/
     state: directory
+    owner: root
+    group: root
+    mode: 0755
 
 - name: Load custom.conf file into renderd systemd service
   template:
@@ -79,12 +82,14 @@
   get_url:
     url: "{{ tileserver_favicon }}"
     dest: /var/www/html/favicon.ico
+    owner: www-data
+    mode: 664
 
 - name: Ensure permissions are correct for renderd
   file:
     path: "{{ item }}"
     state: directory
-    recurse: yes
+    recurse: true
     owner: osm
     group: osm
   with_items:
@@ -95,8 +100,8 @@
   service:
     name: renderd.service
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true
 
 - name: Force restart renderd service
   service:

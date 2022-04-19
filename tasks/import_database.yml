@@ -6,17 +6,31 @@
   register: gis_database_size
 
 - name: Import OSM PBF into database because it do not already exists
-  when: (gis_database_size.stdout | int) < 2000000000 or osm_force_database_import == true
+  when: (gis_database_size.stdout | int) < 2000000000 or osm_force_database_import
   block:
   - name: Download osm pbf file if it is not already present
     shell: test -f {{ osm_map_pbf_file }} || wget -O {{ osm_map_pbf_file }} {{ osm_map_pbf_url }}
 
-  - debug:
+  - name: Advise the user to take a break during import
+    debug:
       msg: "Import database operation can take a while (~72h for a full planet import). Please launch this playbook into a screen or take a huge coffee break."
 
   - name: Import OSM pbf file to Postgres database
     shell:
-      cmd: runuser -u {{ osm_user }} -- osm2pgsql -d {{ osm_database_name }} -v --slim {{ "--flat-nodes " + osm2pgsql_flat_nodes_path if osm2pgsql_flat_nodes == true }} --hstore --multi-geometry --number-processes {{ osm2pgsql_threads }} --tag-transform-script /home/{{ osm_user }}/openstreetmap-carto/openstreetmap-carto.lua --style /home/{{ osm_user }}/openstreetmap-carto/openstreetmap-carto.style -C {{ osm2pgsql_cache_memory }} {{ osm_map_pbf_file }} && exit 0
+      cmd: |
+        runuser -u {{ osm_user }} -- osm2pgsql \
+          -d {{ osm_database_name }} \
+          -v \
+          --slim \
+          {{ "--flat-nodes " + osm2pgsql_flat_nodes_path if osm2pgsql_flat_nodes }} \
+          --hstore \
+          --multi-geometry \
+          --number-processes {{ osm2pgsql_threads }} \
+          --tag-transform-script /home/{{ osm_user }}/openstreetmap-carto/openstreetmap-carto.lua \
+          --style /home/{{ osm_user }}/openstreetmap-carto/openstreetmap-carto.style \
+          -C {{ osm2pgsql_cache_memory }} \
+          {{ osm_map_pbf_file }} \
+          && exit 0
 
   # Grant all privileges of the gis database to the osm user
   - name: Select query to db acme with positional arguments and non-default credentials
@@ -24,12 +38,11 @@
 
   - name: Import custom OSM indexes for faster rendering
     shell:
-      cmd: runuser -u {{ osm_user }} -- psql -d {{ osm_database_name }} -f indexes.sql 
+      cmd: runuser -u {{ osm_user }} -- psql -d {{ osm_database_name }} -f indexes.sql
       chdir: /home/{{ osm_user }}/openstreetmap-carto
 
   - name: Removes osm pbf file after import
     file:
       path: "{{ osm_map_pbf_file }}"
       state: absent
-    when: osm_remove_pbf_after_import == true
-
+    when: osm_remove_pbf_after_import

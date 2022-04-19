@@ -1,9 +1,9 @@
 ---
 - name: Install required packages for leaflet install
-  apt: 
+  apt:
     name: ['wget', 'unzip']
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Create leaflet directory
   file:
@@ -12,16 +12,17 @@
     owner: "{{ osm_user }}"
     group: "www-data"
     mode: 0o775
-    recurse: yes
+    recurse: true
 
 - name: Download latest leaflet release
   get_url:
     url: http://cdn.leafletjs.com/leaflet/v1.7.1/leaflet.zip
     dest: /tmp/leaflet.zip
+    mode: 664
 
 - name: Extract leaflet.zip into /home/{{ osm_user }}/leaflet
   unarchive:
-    remote_src: yes
+    remote_src: true
     src: /tmp/leaflet.zip
     dest: /home/{{ osm_user }}/leaflet
 
@@ -37,7 +38,9 @@
   get_url:
     url: "{{ leaflet_favicon }}"
     dest: /home/{{ osm_user }}/leaflet/favicon.ico
-    
+    owner: www-data
+    mode: 664
+
 - name: Configure leaflet virtualhost configuration
   template:
     src: apache2/leaflet.vhost.j2

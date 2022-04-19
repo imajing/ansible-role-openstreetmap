@@ -1,15 +1,15 @@
 ---
 - name: Upgrade the OS (apt-get upgrade)
   apt:
-    upgrade: yes
-    update_cache: yes
-  when: apt_upgrade == true
+    upgrade: true
+    update_cache: true
+  when: apt_upgrade
 
 - name: Install required packages
   apt:
     name: ['gnupg2', 'ca-certificates', 'software-properties-common', 'wget', 'curl', 'python3-pip', 'libpq-dev', 'acl', 'python3-yaml', 'python3-requests']
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Add openstreetmap repository
   apt_repository:

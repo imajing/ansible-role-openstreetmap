@@ -1,0 +1,13 @@
+unskippable:
+  - syntax-check
+
+warn_list:
+  - no-changed-when
+
+skip_list:
+  - 301
+  - 305
+  - 306
+  - fqcn-builtins
+  - command-instead-of-shell
+  - risky-shell-pipe

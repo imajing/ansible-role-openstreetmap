@@ -6,9 +6,21 @@
 
 - name: Install required packages
   apt:
-    name: ['build-essential', 'autoconf', 'apache2-dev', 'libcairo2-dev', 'libcurl4-gnutls-dev', 'libglib2.0-dev', 'libiniparser-dev', 'libmapnik-dev', 'libmemcached-dev', 'librados-dev']
+    name:
+      [
+        "build-essential",
+        "autoconf",
+        "apache2-dev",
+        "libcairo2-dev",
+        "libcurl4-gnutls-dev",
+        "libglib2.0-dev",
+        "libiniparser-dev",
+        "libmapnik-dev",
+        "libmemcached-dev",
+        "librados-dev"
+      ]
     state: present
-    update_cache: yes
+    update_cache: true
 
 # Download, build & install
 - name: Clone mod_tile repository v.{{ renderd_version }}
@@ -27,6 +39,9 @@
   file:
     path: "{{ item }}"
     state: directory
+    owner: root
+    group: root
+    mode: 0755
   with_items:
     - /run/renderd
     - /var/cache/renderd/tiles
@@ -48,4 +63,4 @@
   service:
     name: apache2
     state: restarted
-    enabled: yes
+    enabled: true

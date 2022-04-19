@@ -5,10 +5,27 @@
     state: absent
 
 - name: Install required packages for osm2pgsql build are installed
-  apt: 
-    name: ["make", "cmake", "g++", "libboost-dev", "libboost-system-dev", "libboost-filesystem-dev", "libexpat1-dev", "zlib1g-dev", "libbz2-dev", "libpq-dev", "libproj-dev", "lua5.3", "liblua5.3-dev", "libluajit-5.1-dev", "pandoc"]
+  apt:
+    name:
+      [
+        "make",
+        "cmake",
+        "g++",
+        "libboost-dev",
+        "libboost-system-dev",
+        "libboost-filesystem-dev",
+        "libexpat1-dev",
+        "zlib1g-dev",
+        "libbz2-dev",
+        "libpq-dev",
+        "libproj-dev",
+        "lua5.3",
+        "liblua5.3-dev",
+        "libluajit-5.1-dev",
+        "pandoc",
+      ]
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Clone osm2pgsql repository v.{{ osm2pgsql_version }}
   git:
@@ -22,10 +39,13 @@
   file:
     path: /home/osm/osm2pgsql/build
     state: directory
+    owner: root
+    group: root
+    mode: 0755
 
 - name: Build makefile with "cmake"
   shell:
-    cmd: cmake -D WITH_LUAJIT=ON .. 
+    cmd: cmake -D WITH_LUAJIT=ON ..
     chdir: /home/osm/osm2pgsql/build
 
 - name: Build osm2pgsql with "make"
