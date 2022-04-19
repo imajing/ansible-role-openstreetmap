@@ -1,6 +1,6 @@
 ---
 - name: Ensure required packages for PostgreSQL are installed
-  apt: 
+  apt:
     name: ['gnupg2', 'wget', 'vim']
     state: present
     update_cache: yes
@@ -32,7 +32,7 @@
   lineinfile:
     path: /etc/postgresql/14/main/postgresql.conf
     line: "{{ item }}"
-  with_items: 
+  with_items:
     - "shared_buffers = {{ osm_pg_shared_buffers }}"
     - "work_mem = {{ osm_pg_work_mem }}"
     - "maintenance_work_mem = {{ osm_pg_maintenance_work_mem }}"
@@ -47,7 +47,7 @@
 
 # Configure hugepage
 - name: Retrieve PostgreSQL vmpeak size in kb
-  shell: grep ^VmPeak /proc/$(head -1 /var/lib/postgresql/14/main/postmaster.pid)/status | awk '{print $2}'  
+  shell: grep ^VmPeak /proc/$(head -1 /var/lib/postgresql/14/main/postmaster.pid)/status | awk '{print $2}'
   register: pg_vmpeak
 
 - name: Retrieve huge page size in kb

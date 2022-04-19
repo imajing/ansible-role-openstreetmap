@@ -5,7 +5,7 @@
     state: present
 
 - name: Install osm2pgsql (v1.4.1) required for database import
-  apt: 
+  apt:
     name: ['osm2pgsql']
     state: present
     update_cache: yes
@@ -18,4 +18,4 @@
 
 - name: Compile osm2pgsql (v{{ osm2pgsql_version }}) required for database import
   include: compile_osm2pgsql.yml
-  when: osm2pgsql_version != '1.4.1' and ansible_distribution_major_version == '20' and osm_installed.stat.exists == false
+  when: osm2pgsql_version != '1.4.1' and ansible_distribution_major_version == '20' and not osm_installed.stat.exists

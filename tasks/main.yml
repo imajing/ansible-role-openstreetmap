@@ -24,15 +24,15 @@
 
 - name: Configure OSM auto-update
   include: configure_autoupdate.yml
-  when: osm_replication == true and osm2pgsql_version is version ('1.6.0', '>=')
+  when: osm_replication and osm2pgsql_version is version ('1.6.0', '>=')
 
 - debug:
     msg: Skipping database auto-update as is it only compatible with osm2pgsql 1.6.0+ versions
-  when: osm_replication == true and osm2pgsql_version is version ('1.6.0', '<')
+  when: osm_replication and osm2pgsql_version is version ('1.6.0', '<')
 
 - name: Setup leaflet to easily consult OSM data from browser
   include: setup_leaflet.yml
-  when: install_leaflet == true
+  when: install_leaflet
 
 - name: Ensure mod_tile (renderd) is properly installed
   uri:

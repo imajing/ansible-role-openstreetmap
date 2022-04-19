@@ -3,7 +3,7 @@
   apt:
     upgrade: yes
     update_cache: yes
-  when: apt_upgrade == true
+  when: apt_upgrade
 
 - name: Install required packages
   apt:

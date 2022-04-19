@@ -11,9 +11,9 @@ This role require **posix** ansible module, so you may have to launch : `ansible
 This role requires root access, so either run it in a playbook with a global `become: yes`, or invoke the role in your playbook like:
 
     - hosts: osm
-	    roles:
-		    - role: openstreetmap    
-			    become: yes
+      roles:
+        - role: openstreetmap    
+          become: yes
 
 ### Hardware requirements
 The whole planet extract take around **1.8To** while imported into database. For this reason, please make sure you have enough space into **/var/lib/postgresql** (database data directory) and **/home/osm** (main directory) 
@@ -27,30 +27,30 @@ The following variables are always required:
 
 	tileserver_main_domain: osm.imajing.fr
 	tileserver_subdomains:
-		- a.osm.imajing.fr
-		- b.osm.imajing.fr
-		- c.osm.imajing.fr
-		- d.osm.imajing.fr
+	  - a.osm.imajing.fr
+	  - b.osm.imajing.fr
+	  - c.osm.imajing.fr
+	  - d.osm.imajing.fr
 	leaflet_address: "osm.imajing.fr"
 
   Note than you can get a **full list of available variables** by checking **`example/vars.yml`** file  
 
 ## Example Playbook
     - hosts: servers
-	  roles:
-	    - role: mpaletou.openstreetmap 
-		    become: true
-	  vars:
-		tileserver_main_domain: osm.imajing.fr
-		tileserver_subdomains:
-			- a.osm.imajing.fr
-			- b.osm.imajing.fr
-			- c.osm.imajing.fr
-			- d.osm.imajing.fr
-		leaflet_address: "osm.imajing.fr"
-		# By default, the whole planet extract is imported which is really big.
-		# You can get zone extracts address here: https://download.openstreetmap.fr/extracts/
-		osm_map_pbf_url: https://download.openstreetmap.fr/extracts/oceania-latest.osm.pbf
+      roles:
+        - role: mpaletou.openstreetmap 
+          become: true
+      vars:
+        tileserver_main_domain: osm.imajing.fr
+        tileserver_subdomains:
+          - a.osm.imajing.fr
+          - b.osm.imajing.fr
+          - c.osm.imajing.fr
+          - d.osm.imajing.fr
+        leaflet_address: "osm.imajing.fr"
+        # By default, the whole planet extract is imported which is really big.
+        # You can get zone extracts address here: https://download.openstreetmap.fr/extracts/
+        osm_map_pbf_url: https://download.openstreetmap.fr/extracts/oceania-latest.osm.pbf
 
 ### Default versions
 - osm2pgsql 1.4.1 (1.6.0 available is latest repo). You can get further informations about available version from https://github.com/openstreetmap/osm2pgsql
@@ -99,4 +99,3 @@ MIT / BSD
 ## Author Information
 
 This role was created in 2022 by [Malo Paletou](https://github.com/mpaletou), for [Imajing SAS purpose](https://imajing.eu/).
-

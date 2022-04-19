@@ -6,7 +6,19 @@
 
 - name: Install required packages
   apt:
-    name: ['build-essential', 'autoconf', 'apache2-dev', 'libcairo2-dev', 'libcurl4-gnutls-dev', 'libglib2.0-dev', 'libiniparser-dev', 'libmapnik-dev', 'libmemcached-dev', 'librados-dev']
+    name:
+      [
+        "build-essential",
+        "autoconf",
+        "apache2-dev",
+        "libcairo2-dev",
+        "libcurl4-gnutls-dev",
+        "libglib2.0-dev",
+        "libiniparser-dev",
+        "libmapnik-dev",
+        "libmemcached-dev",
+        "librados-dev"
+      ]
     state: present
     update_cache: yes
 
