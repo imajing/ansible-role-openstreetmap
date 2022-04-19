@@ -25,7 +25,7 @@
         "pandoc",
       ]
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Clone osm2pgsql repository v.{{ osm2pgsql_version }}
   git:
@@ -39,6 +39,9 @@
   file:
     path: /home/osm/osm2pgsql/build
     state: directory
+    owner: root
+    group: root
+    mode: 0755
 
 - name: Build makefile with "cmake"
   shell:

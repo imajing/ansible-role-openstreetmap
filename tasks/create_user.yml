@@ -12,9 +12,9 @@
     shell: /bin/bash
     comment: "{{ osm_user }} user"
     group: osm
-    create_home: yes
-    system: yes
-    force: yes
+    create_home: true
+    system: true
+    force: true
 
 - name: Define default ACLs for {{ osm_user }}
   acl:
@@ -23,7 +23,7 @@
     etype: user
     permissions: rwx
     recursive: true
-    default: yes
+    default: true
     state: present
 
 - name: Ensure ACLs are correctly set for {{ osm_user }}

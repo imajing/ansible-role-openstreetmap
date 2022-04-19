@@ -3,13 +3,13 @@
   apt:
     name: ['git', 'acl', 'curl', 'unzip', 'gdal-bin', 'mapnik-utils', 'libmapnik-dev', 'python3-pip', 'npm']
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Install fonts packages used by map rendering
   apt:
     name: ['ttf-dejavu', 'fonts-noto-cjk', 'fonts-noto-cjk-extra', 'fonts-noto-hinted', 'fonts-noto-unhinted', 'ttf-unifont', 'fonts-hanazono']
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Clone openstreetmap-carto repository
   git:

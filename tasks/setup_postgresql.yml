@@ -3,7 +3,7 @@
   apt:
     name: ['gnupg2', 'wget', 'vim']
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Add PostgreSQL repository key
   apt_key:
@@ -19,13 +19,13 @@
   apt:
     name: ['postgresql-14', 'postgresql-contrib-14', 'postgis', 'postgresql-14-postgis-3']
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Ensure PostgreSQL is properly started and enabled
   service:
     name: postgresql
     state: started
-    enabled: yes
+    enabled: true
 
 # Edit postgresql.conf
 - name: Customize postgresql configuration
@@ -59,7 +59,7 @@
     name: vm.nr_hugepages
     value: "{{ ((pg_vmpeak.stdout | int) / (pg_hugepagesize.stdout | int)) | int }}"
     state: present
-    reload: yes
+    reload: true
   notify: "restart postgresql"
 
 - name: Check if database is initialized

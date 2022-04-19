@@ -5,3 +5,7 @@ skip_list:
   - 301
   - 305
   - 306
+  - fqcn-builtins
+  - command-instead-of-shell
+  - no-changed-when
+  - risky-shell-pipe

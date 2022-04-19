@@ -11,7 +11,8 @@
   - name: Download osm pbf file if it is not already present
     shell: test -f {{ osm_map_pbf_file }} || wget -O {{ osm_map_pbf_file }} {{ osm_map_pbf_url }}
 
-  - debug:
+  - name: Advise the user to take a break during import
+    debug:
       msg: "Import database operation can take a while (~72h for a full planet import). Please launch this playbook into a screen or take a huge coffee break."
 
   - name: Import OSM pbf file to Postgres database
