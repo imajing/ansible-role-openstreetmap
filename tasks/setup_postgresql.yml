@@ -1,9 +1,9 @@
 ---
 - name: Ensure required packages for PostgreSQL are installed
-  apt: 
+  apt:
     name: ['gnupg2', 'wget', 'vim']
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Add PostgreSQL repository key
   apt_key:
@@ -19,20 +19,22 @@
   apt:
     name: ['postgresql-14', 'postgresql-contrib-14', 'postgis', 'postgresql-14-postgis-3']
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Ensure PostgreSQL is properly started and enabled
   service:
     name: postgresql
     state: started
-    enabled: yes
+    enabled: true
 
 # Edit postgresql.conf
 - name: Customize postgresql configuration
   lineinfile:
     path: /etc/postgresql/14/main/postgresql.conf
     line: "{{ item }}"
-  with_items: 
+    regexp: "^{{ item.split('=')[0] }}"
+    state: present
+  with_items:
     - "shared_buffers = {{ osm_pg_shared_buffers }}"
     - "work_mem = {{ osm_pg_work_mem }}"
     - "maintenance_work_mem = {{ osm_pg_maintenance_work_mem }}"
@@ -47,7 +49,7 @@
 
 # Configure hugepage
 - name: Retrieve PostgreSQL vmpeak size in kb
-  shell: grep ^VmPeak /proc/$(head -1 /var/lib/postgresql/14/main/postmaster.pid)/status | awk '{print $2}'  
+  shell: grep ^VmPeak /proc/$(head -1 /var/lib/postgresql/14/main/postmaster.pid)/status | awk '{print $2}'
   register: pg_vmpeak
 
 - name: Retrieve huge page size in kb
@@ -59,7 +61,7 @@
     name: vm.nr_hugepages
     value: "{{ ((pg_vmpeak.stdout | int) / (pg_hugepagesize.stdout | int)) | int }}"
     state: present
-    reload: yes
+    reload: true
   notify: "restart postgresql"
 
 - name: Check if database is initialized

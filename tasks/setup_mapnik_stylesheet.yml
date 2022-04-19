@@ -14,7 +14,7 @@
         "npm",
       ]
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Install fonts packages used by map rendering
   apt:
@@ -29,7 +29,7 @@
         "fonts-hanazono",
       ]
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Clone openstreetmap-carto repository
   git:
