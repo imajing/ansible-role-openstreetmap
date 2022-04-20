@@ -24,6 +24,9 @@ tileserver_subdomains: # (required)
   - e.osm.imajing.fr
   - f.osm.imajing.fr
 
+# The subpath from which tiles will be served. This needs to start and end with a slash (default: "/osm/")
+#tileserver_subpath: /
+
 # tileserver_favicon: "{{ default_favicon_url }}"
 # renderd_threads: "{{ ansible_processor_vcpus }}"                                         # Set to server threads count if no values is entered
 

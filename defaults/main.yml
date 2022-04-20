@@ -16,6 +16,7 @@ default_favicon_url: https://wiki.openstreetmap.org/favicon.ico
 # TILESERVER
 # Set this value to a favicon url if you want to use a custom one
 tileserver_favicon: "{{ default_favicon_url }}"
+tileserver_subpath: "/osm/"
 # Set to server threads count if no specific value is entered
 renderd_threads: "{{ ansible_processor_vcpus }}"
 
