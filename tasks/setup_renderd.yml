@@ -68,7 +68,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: 0o755
 
 - name: Load custom.conf file into renderd systemd service
   template:
@@ -83,7 +83,7 @@
     url: "{{ tileserver_favicon }}"
     dest: /var/www/html/favicon.ico
     owner: www-data
-    mode: 664
+    mode: 0o664
 
 - name: Ensure permissions are correct for renderd
   file:

@@ -41,7 +41,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: 0o755
   with_items:
     - /run/renderd
     - /var/cache/renderd/tiles

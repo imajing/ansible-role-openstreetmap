@@ -18,7 +18,7 @@
   get_url:
     url: http://cdn.leafletjs.com/leaflet/v1.7.1/leaflet.zip
     dest: /tmp/leaflet.zip
-    mode: 664
+    mode: 0o664
 
 - name: Extract leaflet.zip into /home/{{ osm_user }}/leaflet
   unarchive:
