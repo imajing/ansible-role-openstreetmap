@@ -111,8 +111,8 @@
 
     - name: Set custom CORS policy if desired
       lineinfile:
-        path: /etc/apache2/sites-available/security.conf
-        line: "add Header set Access-Control-Allow-Origin {{ renderd_cors }}"
+        path: /etc/apache2/conf-available/security.conf
+        line: "Header set Access-Control-Allow-Origin {{ renderd_cors }}"
         state: present
 
 - name: Force restart renderd service
