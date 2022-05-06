@@ -68,7 +68,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: 0o755
 
 - name: Load custom.conf file into renderd systemd service
   template:
@@ -83,7 +83,7 @@
     url: "{{ tileserver_favicon }}"
     dest: /var/www/html/favicon.ico
     owner: www-data
-    mode: 664
+    mode: 0o664
 
 - name: Ensure permissions are correct for renderd
   file:
@@ -102,6 +102,18 @@
     state: started
     enabled: true
     daemon_reload: true
+
+- name: Set custom CORS headers if configured
+  when: renderd_cors is defined
+  block:
+    - name: Enable apache2 headers module
+      shell: a2enmod headers
+
+    - name: Set custom CORS policy if desired
+      lineinfile:
+        path: /etc/apache2/conf-available/security.conf
+        line: "Header set Access-Control-Allow-Origin {{ renderd_cors }}"
+        state: present
 
 - name: Force restart renderd service
   service:
